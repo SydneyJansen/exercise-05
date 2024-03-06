@@ -1,0 +1,119 @@
+---
+title: "ex5"
+author: "Sydney Jansen"
+date: "2024-03-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r }
+#Step 1 & 2
+library(dplyr)
+d <- read.csv("https://raw.githubusercontent.com/difiore/ada-2024-datasets/main/IMDB-movies.csv", header = TRUE, stringsAsFactors = FALSE)
+head(d)
+
+#Use a one-line statement to filter the dataset to include just movies from 1920 to 1979 and movies that are between 1 and 3 hours long (runtimeMinutes >= 60 and runtimeMinutes <= 180), and add a new column that codes the startYear into a new variable, decade (“20s”, “30s”, …“70s”). If you do this correctly, there should be 5651 movies remaining in the dataset.
+filtered_movies <- d |>
+  filter(startYear >= 1920, startYear <= 1979, runtimeMinutes >= 60, runtimeMinutes <=   180) |>
+  mutate(decade = paste0(substr(as.character(startYear), 1, 3), "0s"))
+```
+
+```{r }
+## Step 3
+library(ggplot2)
+#Use {ggplot2} (which is part of {tidyverse}) to plot histograms of the distribution of runtimeMinutes for each decade.
+
+ggplot(filtered_movies, aes(x = runtimeMinutes)) +
+  geom_histogram(binwidth = 10, fill = "blue", color = "black") + 
+  facet_wrap(~decade) +
+  labs(title = "Distribution of Runtime Minutes by Decade",
+       x = "Runtime Minutes",
+       y = "Count") +
+  theme_minimal()
+
+#Step 4
+#Use a one-line statement to calculate the population mean and population standard deviation in runtimeMinutes for each decade and save the results in a new dataframe called results.
+results <- filtered_movies |>
+  group_by(decade) |>
+  summarise(
+    mean_runtimeMinutes = mean(runtimeMinutes, na.rm = TRUE),
+    sd_runtimeMinutes = sd(runtimeMinutes, na.rm = TRUE)
+  )
+
+# Step 5
+#Draw a single sample of 100 movies, without replacement, from each decade and calculate the single sample mean and single sample standard deviation in runtimeMinutes for each decades. Recall that your single sample mean for each decade is an estimate of the population mean for each decade.
+
+d_sample <- d |> group_by(Decade) |> slice_sample(n = 100, replace = FALSE) |> summarize(mean = mean(runtimeMinutes), sd = sd(runtimeMinutes))
+d_sample <- d |> group_by(Decade) |> slice_sample(n = 100, replace = FALSE) 
+d_sample_summary <- d_sample |> summarize(mean = mean(runtimeMinutes), sd = sd(runtimeMinutes))
+```
+
+## Step 6
+
+-   Calculate for each decade the standard error around your estimate of the population mean **runtimeMinutes** based on the standard deviation and sample size (n=100 movies) of your single sample.
+
+```{r Step1.6}
+d_sample_summary$se <- (d_sample_summary$sd/sqrt(100))
+```
+
+## Step 7
+
+-   Compare these estimates to the actual population mean **runtimeMinutes** for each decade and to the calculated SE in the population mean for samples of size 100 based on the population standard deviation for each decade.
+
+```{r Step1.7}
+# difference in population and sample means
+d_sample_summary$mean_diff <- (results$mean - d_sample_summary$mean)
+# SE from pop is population sd divided by sample size
+d_sample_summary$se_pop <- (results$sd/sqrt(100))
+# difference in SE 
+d_sample_summary$se_diff <- (d_sample_summary$se_pop - d_sample_summary$se)
+```
+
+## Step 8
+
+-   Generate a *sampling distribution* of mean **runtimeMinutes** for each decade by [a] drawing 1000 random samples of 100 movies from each decade, without replacement, and, for each sample, [b] calculating the mean **runtimeMinutes** and the standard deviation in **runtimeMinutes** for each decade. Use either a standard `for( ){ }` loop, the `do(reps) *` formulation from {mosaic}, the `rerun()` function from {purrr}, or the `rep_sample_n()` workflow from {infer} to generate your these sampling distributions (see [**Module 16**](https://difiore.github.io/ada-2024/16-module.html)).
+
+```{r Step1.8}
+library(infer)
+reps <- 1000
+samp_dist_decade <- d |> rep_sample_n(size = 100, reps = reps, replace = FALSE) |> group_by(Decade) |> summarize(mean = mean(runtimeMinutes), sd = sd(runtimeMinutes))
+```
+
+```
+## Step 9
+
+-   Then, calculate the **mean** and the **standard deviation** of the sampling distribution of sample means for each decade (the former should be a very good estimate of the population mean, while the latter is another estimate of the standard error in our estimate of the population mean for a particular sample size) and plot a histogram of the sampling distribution for each decade. What shape does it have?
+
+```{r Step 1.9}
+```
+
+## Step 10
+
+-   Finally, compare the standard error in **runtimeMinutes** for samples of size 100 from each decade [1] as estimated from your **first** sample of 100 movies, [2] as calculated from the known *population* standard deviations for each decade, and [3] as estimated from the sampling distribution of sample means for each decade.
+
+```{r Step 1.10}
+```
+
+# Challenge 2
+
+## Step 1
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
