@@ -130,7 +130,6 @@ ten_three <- (calc_mean_sd$sd/sqrt(100))
 
 # Challenge 2
 
-## Step 1
 ```
 
 ```{r}
@@ -227,59 +226,69 @@ sampled_survivors <- zombie |>
   slice_sample(n = 50)
 
 z_sample <- zombie |> slice_sample(n = 50, replace = FALSE) 
-z_sample_summary2 <- z_sample |> summarize(mean.height = mean(height), sd.height = sd(height), mean.weight = mean(weight), sd.weight = sd(weight), mean.zombies = mean(zombies_killed), sd.zombies = sd(zombies_killed), mean.education = mean(years_of_education), sd.education = sd(years_of_education), mean.age = mean(age), sd.age = sd(age))
-z_sample_summary2$se.height <- (z_sample_summary$sd.height/sqrt(50))
-z_sample_summary2$se.weight <- (z_sample_summary$sd.weight/sqrt(50))
-z_sample_summary2$se.zombies <- (z_sample_summary$sd.zombies/sqrt(50))
-z_sample_summary2$se.education <- (z_sample_summary$sd.education/sqrt(50))
-z_sample_summary2$se.age <- (z_sample_summary$sd.age/sqrt(50))
+z_sample_summary <- z_sample |> summarize(mean.height = mean(height), sd.height = sd(height), mean.weight = mean(weight), sd.weight = sd(weight), mean.zombies = mean(zombies_killed), sd.zombies = sd(zombies_killed), mean.education = mean(years_of_education), sd.education = sd(years_of_education), mean.age = mean(age), sd.age = sd(age))
+z_sample_summary$se.height <- (z_sample_summary$sd.height/sqrt(50))
+z_sample_summary$se.weight <- (z_sample_summary$sd.weight/sqrt(50))
+z_sample_summary$se.zombies <- (z_sample_summary$sd.zombies/sqrt(50))
+z_sample_summary$se.education <- (z_sample_summary$sd.education/sqrt(50))
+z_sample_summary$se.age <- (z_sample_summary$sd.age/sqrt(50))
 
-CI.height <- z_sample_summary2$mean.height + c(-1, 1) * qt(1 - 0.05/2, df = 49) * z_sample_summary2$se.height
-CI.weight <- z_sample_summary2$mean.weight + c(-1, 1) * qt(1 - 0.05/2, df = 49) * z_sample_summary2$se.weight
-CI.zombies <- z_sample_summary2$mean.zombies + c(-1, 1) * qt(1 - 0.05/2, df = 49) * z_sample_summary2$se.zombies
-CI.education <- z_sample_summary2$mean.education + c(-1, 1) * qt(1 - 0.05/2, df = 49) * z_sample_summary2$se.education
-CI.age <- z_sample_summary2$mean.age + c(-1, 1) * qt(1 - 0.05/2, df = 49) * z_sample_summary2$se.age
+CI.height <- z_sample_summary$mean.height + c(-1, 1) * qt(1 - 0.05/2, df = 49) * z_sample_summary$se.height
+CI.weight <- z_sample_summary$mean.weight + c(-1, 1) * qt(1 - 0.05/2, df = 49) * z_sample_summary$se.weight
+CI.zombies <- z_sample_summary$mean.zombies + c(-1, 1) * qt(1 - 0.05/2, df = 49) * z_sample_summary$se.zombies
+CI.education <- z_sample_summary$mean.education + c(-1, 1) * qt(1 - 0.05/2, df = 49) * z_sample_summary$se.education
+CI.age <- z_sample_summary$mean.age + c(-1, 1) * qt(1 - 0.05/2, df = 49) * z_sample_summary$se.age
+z_sample_summary
 
-z_sample_summary2
+#  first sample + 199 samples
+z_sample_dist_summary <- bind_rows(z_sample_dist_summary, z_sample_summary)
+mean(z_sample_dist_summary$sd.age)
+# 2.960583
+sd(z_sample_dist_summary$mean.age)
+# 0.3610204
+print(z_sample_dist_summary)
+
+
 
 #What are the means and standard deviations of the sampling distribution for each variable? 
-mean.height 68.28723
-<dbl>
-sd.height	3.957781
-<dbl>
-mean.weight	147.7235
-<dbl>
-sd.weight 18.9617
-<dbl>
-mean.zombies 2.92
-<dbl>
-sd.zombies 1.588736
-<dbl>
-mean.education 2.84
-<dbl>
-sd.education	1.595402
-<dbl>#
+
+#mean.height 68.28723
+#sd.height 3.957781
+#mean.weight 147.7235
+#sd.weight 18.9617
+#mean.zombies 2.92
+#sd.zombies 1.588736
+#mean.education 2.84
+#sd.education 1.595402
+#mean.age 19.35536
+#sd.age 2.680269
+#se.height 0.5597148
+#se.weight 2.681589
+#se.zombies 0.2246812
+#se.education 0.2256239
+#se.age 0.3790473
 
 #How do the standard deviations of the sampling distribution for each variable compare to the standard errors estimated from your first sample of size 50?
 # They are very similar to the first sample of 50
-  Above vs 
-mean.height
-<dbl>
-sd.height
-<dbl>
-mean.weight
-<dbl>
-sd.weight
-<dbl>
-mean.zombies
-<dbl>
-sd.zombies
-<dbl>
-mean.education
-<dbl>
-sd.education
-<dbl>
-66.507	4.221057	137.8084	19.17696	2.68	1.609157	3.24	1.779245	
+#mean.height 68.28723
+#sd.height	3.957781
+#mean.weight	147.7235
+#sd.weight 18.9617
+#mean.zombies 2.92
+#sd.zombies 1.588736
+#mean.education 2.84
+#sd.education	1.595402
+#vs 
+#mean.height
+#sd.height
+#mean.weight
+#sd.weight
+#mean.zombies
+#sd.zombies
+#mean.education
+#sd.education
+
+#66.507	4.221057	137.8084	19.17696	2.68	1.609157	3.24	1.779245	
 
 
 ##Step 8
@@ -296,24 +305,23 @@ ggplot(z_sample_summary2, aes(x = mean.age)) + geom_histogram(bins = 20)
 qqPlot(z_sample_summary2$mean.age)  
   
 #What do they look like? Are they normally distributed? What about for those variables that you concluded were not originally drawn from a normal distribution?
- Everything is fitted to the model to look less chaotic. Those variables not origincally drawn fit the q-q plots better than the original
+# Everything is fitted to the model to look less chaotic. Those variables not origincally drawn fit the q-q plots better than the original
 ```
 ```{r}
 #Step 9
-#Construct a 95% confidence interval for each mean directly from the sampling distribution of sample means using the central 95% that distribution (i.e., by setting the lower and upper CI bounds to 2.5% and 97.5% of the way through that distribution).
-
-CI.dist.height <- quantile(z_sample_summary2$mean.height, c(0.025, 0.975))
-CI.dist.weight <- quantile(z_sample_summary2$mean.weight, c(0.025, 0.975))
-CI.dist.zombies <- quantile(z_sample_summary2$mean.zombies, c(0.025, 0.975))
-CI.dist.education <- quantile(z_sample_summary2$mean.education, c(0.025, 0.975))
-CI.dist.age <- quantile(z_sample_summary2$mean.age, c(0.025, 0.975))
+#Construct a 95% confidence interval for each mean directly from the sampling distribution of sample means using the central 95% that distribution (i.e., by setting the lower and upper CI bounds to 2.5% and 97.5% of the way through that distribution). T
+CI.dist.height <- quantile(z_sample_summary$mean.height, c(0.025, 0.975))
+CI.dist.weight <- quantile(z_sample_summary$mean.weight, c(0.025, 0.975))
+CI.dist.zombies <- quantile(z_sample_summary$mean.zombies, c(0.025, 0.975))
+CI.dist.education <- quantile(z_sample_summary$mean.education, c(0.025, 0.975))
+CI.dist.age <- quantile(z_sample_summary$mean.age, c(0.025, 0.975))
 
 #How do the various 95% CIs you estimated compare to one another (i.e., the CI based on one sample and the corresponding sample standard deviation versus the CI based on simulation where you created a sampling distribution across 200 samples)?
--   Height: 67.2, 69.4 (one sample); 66.5, 68.7 (200 samples)
--   Weight: 141, 152 (one sample); 139, 149 (200 samples)
--   Zombies killed: 2.67, 3.77 (one sample); 2.56, 3.44 (200 samples)
--   Years of education: 2.53, 3.47 (one sample); 2.58, 3.46 (200 samples)
--   Age: 19.3, 20.7 (one sample); 19.2, 20.8 (200 samples)
+ #Height: 67.2, 69.4 (one sample); 68.3, 68.3 (200 samples)
+ #Weight: 142, 153 (one sample); 139, 149 (200 samples)
+ #Zombies killed: 2.47, 3.37(one sample); 2.92, 2.92 (200 samples)
+ #Years of education: 2.39, 2.39 (one sample); 2.84, 2.84 (200 samples)
+ #Age: 18.6, 20.1 (one sample); 19.4, 19.4 (200 samples)
 
 #Step 10
 #Finally, use bootstrapping to generate a 95% confidence interval for each variable mean by resampling 1000 samples, with replacement, from your original sample (i.e., by setting the lower and upper CI bounds to 2.5% and 97.5% of the way through the sampling distribution generated by bootstrapping).
@@ -325,5 +333,5 @@ boot[[i]] <- mean(sample(z_sample$age, n, replace = TRUE))
 }
 lower_boot <- quantile(boot, 0.025)
 upper_boot <- quantile(boot, 0.975)
-
+```
 
